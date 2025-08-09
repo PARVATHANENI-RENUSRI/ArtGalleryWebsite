@@ -1,0 +1,245 @@
+<%@ include file="header.jsp" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Flower Market</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: white;
+            padding: 2px 2px;
+        }
+
+        .navbar a {
+            color: black;
+            text-decoration: none;
+            padding: 10px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #575757;
+            color: white;
+            border-radius: 4px;
+        }
+
+        .scroll-down {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #008CBA;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .scroll-down:hover {
+            background-color: #005f75;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            padding: 40px;
+        }
+
+        .painting-card {
+            margin: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+            width: 30%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .painting-card img {
+            width: 100%;
+            height: 400px;
+            object-fit: contain;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .painting-card img.second {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .painting-card:hover img.first {
+            opacity: 0;
+        }
+
+        .painting-card:hover img.second {
+            opacity: 1;
+        }
+
+        .painting-card:hover {
+            transform: scale(1.05);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 15px;
+            border: 1px solid #888;
+            width: 60%;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .modal-content img {
+            width: auto;
+            max-width: 100%;
+            max-height: 70vh;
+            margin: 10px 0;
+            border-radius: 4px;
+            transition: transform 0.3s;
+            cursor: zoom-in;
+        }
+
+        .modal-content img.zoomed {
+            transform: scale(1.5);
+            cursor: zoom-out;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .painting-card {
+                width: 45%;
+            }
+            .modal-content {
+                width: 90%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .painting-card {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h2 style="text-align:center; margin-top:20px;">Flower Market</h2>
+
+<div id="gallery" class="gallery">
+    <% 
+    String[][] paintings = {
+    		{"FLOWER MARKET - ITALY", "images/flower_market_italy.png", "images/flower_market_italy_modal.webp", "24x36 inches", "A beautiful scene of a flower market in Italy, showcasing vibrant colors and the charm of Italian culture."},
+    		{"FLOWER MARKET - CALIFORNIA", "images/flower_market_california.png", "images/flower_market_california_modal.webp", "24x36 inches", "A vibrant depiction of a California flower market, capturing the bright and lively essence of the West Coast."},
+    		{"FLOWER MARKET - COLORADO", "images/flower_market_colorado.png", "images/flower_market_colorado_modal.webp", "24x36 inches", "A stunning portrayal of a Colorado flower market, with rich colors and a fresh, natural vibe."},
+    		{"LE JARDIN", "images/le_jardin.png", "images/le_jardin_modal.webp", "24x36 inches", "A peaceful and vibrant depiction of a beautiful garden, capturing the serenity and beauty of nature."},
+    		{"HENRI ROUSSEAU - BOUQUET OF FLOWERS 1910", "images/henri_rousseau_bouquet_of_flowers_1910.png", "images/henri_rousseau_bouquet_of_flowers_1910_modal.webp", "24x36 inches", "A stunning reproduction of Henri Rousseau's iconic painting, showcasing a lush bouquet of vibrant flowers with his signature naive style."},
+    		{"FLOWER MARKET - NETHERLANDS", "images/flower_market_netherlands.png", "images/flower_market_netherlands_modal.webp", "24x36 inches", "A lively and colorful depiction of a flower market in the Netherlands, capturing the vibrant colors and bustling atmosphere."},
+    };
+
+    for (String[] painting : paintings) {
+    %>
+        <div class="painting-card" onclick="openModal('<%= painting[2] %>', '<%= painting[0] %>', '<%= painting[3] %>', '<%= painting[4] %>', '<%= painting[1] %>')">
+            <!-- First image shown by default -->
+            <img src="<%= painting[1] %>" alt="<%= painting[0] %>" class="first">
+            <!-- Second image shown on hover -->
+            <img src="<%= painting[2] %>" alt="<%= painting[0] %>" class="second">
+            <h3 style="text-align:center; margin: 10px 0;"><%= painting[0] %></h3>
+        </div>
+    <% } %>
+</div>
+
+<!-- Modal for displaying painting details -->
+<div id="paintingModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle" style="margin: 0 0 10px 0;"></h2>
+        <img id="modalImage" src="" alt="Painting Image" onclick="toggleZoom()" />
+        <p><strong>Description:</strong> <span id="modalDescription"></span></p>
+        <p><strong>Size:</strong> <span id="modalSize"></span></p>
+    </div>
+</div>
+
+<script>
+    let defaultImage = ''; // Store the first image when modal is opened
+
+    function openModal(imageSrc, title, size, description, defaultImg) {
+        // Store the default image for zooming later
+        defaultImage = defaultImg;
+
+        // Display the second image (hover image) in the modal initially
+        document.getElementById("modalImage").src = imageSrc;
+        document.getElementById("modalTitle").innerText = title;
+        document.getElementById("modalDescription").innerText = description;
+        document.getElementById("modalSize").innerText = size;
+        document.getElementById("paintingModal").style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById("paintingModal").style.display = "none";
+        document.getElementById("modalImage").classList.remove("zoomed"); // Reset zoom when closing modal
+    }
+
+    function toggleZoom() {
+        const modalImage = document.getElementById("modalImage");
+
+        // When the image is clicked, check if it's the second image
+        if (modalImage.src.includes(defaultImage)) {
+            // If it's the default image (first image), zoom it
+            modalImage.classList.toggle("zoomed"); // Toggle zoomed class for zoom effect
+        } else {
+            // If it's the second image (hover image), switch to the first image (default image)
+            modalImage.src = defaultImage;
+        }
+    }
+
+    window.onclick = function(event) {
+        var modal = document.getElementById("paintingModal");
+        if (event.target == modal) {
+            closeModal();
+        }
+    }
+</script>
+
+</body>
+</html>

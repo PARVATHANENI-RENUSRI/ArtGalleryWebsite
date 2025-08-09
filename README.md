@@ -42,3 +42,11 @@ This project showcases a curated collection of artworks with features for browsi
 
 ## 📂 Project Structure
 
+ArtGallery1/
+│── src/main/java/com.controller/ # Controller classes
+│── src/main/java/com.model/ # Model classes (DB logic)
+│── src/main/java/com.entity/ # Entity classes (POJOs)
+│── src/main/webapp/ # JSP pages, images, CSS, JS
+│── META-INF/ # Persistence configuration
+│── pom.xml # Maven dependencies
+│── README.md # Project documentation
